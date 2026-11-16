@@ -1,11 +1,29 @@
 const menuButton = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
+const themeToggle = document.querySelector("#theme-toggle");
 const contactForm = document.querySelector("#contact-form");
 const year = document.querySelector("#year");
 const projectModal = document.querySelector("#project-modal");
 const modalCloseButton = projectModal.querySelector(".project-modal-close");
 const projectCards = document.querySelectorAll(".project-card[data-project]");
 let activeProjectCard = null;
+
+function setTheme(theme) {
+  const isDark = theme === "dark";
+  document.documentElement.dataset.theme = isDark ? "dark" : "light";
+  themeToggle.textContent = isDark ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-label", isDark ? "라이트 모드로 전환" : "다크 모드로 전환");
+  themeToggle.setAttribute("aria-pressed", String(isDark));
+}
+
+const savedTheme = localStorage.getItem("portfolio-theme");
+setTheme(savedTheme === "dark" ? "dark" : "light");
+
+themeToggle.addEventListener("click", () => {
+  const nextTheme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  localStorage.setItem("portfolio-theme", nextTheme);
+  setTheme(nextTheme);
+});
 
 const projectDetails = {
   tmap: {
