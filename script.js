@@ -107,6 +107,52 @@ projectModal.addEventListener("close", () => {
 contactForm.addEventListener("submit", (event) => {
   event.preventDefault();
   const message = contactForm.querySelector(".form-message");
-  message.textContent = "구독해주셔서 감사합니다. 새로운 작업 소식을 전해드릴게요!";
-  contactForm.reset();
+  const fields = [
+    {
+      input: contactForm.querySelector("#contact-name"),
+      error: contactForm.querySelector("#name-error"),
+      requiredMessage: "이름을 입력해주세요."
+    },
+    {
+      input: contactForm.querySelector("#contact-email"),
+      error: contactForm.querySelector("#email-error"),
+      requiredMessage: "이메일 주소를 입력해주세요."
+    },
+    {
+      input: contactForm.querySelector("#contact-message"),
+      error: contactForm.querySelector("#message-error"),
+      requiredMessage: "메시지를 입력해주세요."
+    }
+  ];
+
+  const invalidFields = [];
+  fields.forEach(({ input, error, requiredMessage }) => {
+    const value = input.value.trim();
+    input.value = value;
+    const isInvalidEmail = input.type === "email" && value && !input.validity.valid;
+    input.setAttribute("aria-invalid", String(!value || isInvalidEmail));
+    error.textContent = !value
+      ? requiredMessage
+      : isInvalidEmail
+        ? "올바른 이메일 주소 형식을 입력해주세요."
+        : "";
+    if (error.textContent) invalidFields.push(input);
+  });
+
+  if (invalidFields.length > 0) {
+    message.textContent = "입력 내용을 확인해주세요. 표시된 항목을 수정하면 됩니다.";
+    invalidFields[0].focus();
+    return;
+  }
+
+  message.textContent = "입력하신 내용이 모두 확인되었습니다. 실습용 폼으로 실제 이메일은 전송되지 않았습니다.";
+});
+
+contactForm.querySelectorAll("input, textarea").forEach((input) => {
+  input.addEventListener("input", () => {
+    const error = contactForm.querySelector(`#${input.id.replace("contact-", "")}-error`);
+    input.removeAttribute("aria-invalid");
+    error.textContent = "";
+    contactForm.querySelector(".form-message").textContent = "";
+  });
 });
